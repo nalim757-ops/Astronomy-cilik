@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Gemini AI Studio</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 40px auto; padding: 0 20px; background: #f4f4f9; }
+    .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    textarea { width: 100%; height: 100px; margin-bottom: 10px; box-sizing: border-box; padding: 8px; }
+    input[type="password"] { width: 100%; margin-bottom: 10px; box-sizing: border-box; padding: 8px; }
+    button { background: #0066cc; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
+    button:disabled { background: #ccc; }
+    #output { margin-top: 20px; white-space: pre-wrap; background: #eef; padding: 10px; border-radius: 4px; min-height: 50px; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2>Aplikasi Web Gemini AI</h2>
+  
+  <label for="apiKey"><strong>Masukkan API Key AI Studio Kamu:</strong></label>
+  <input type="password" id="apiKey" placeholder="AIzaSy..." />
+  
+  <label for="prompt"><strong>Pertanyaan / Prompt:</strong></label>
+  <textarea id="prompt" placeholder="Tulis sesuatu di sini..."></textarea>
+  
+  <button id="btnSend" onclick="generateContent()">Kirim</button>
+
+  <h3>Hasil:</h3>
+  <div id="output">Hasil balasan AI akan muncul di sini...</div>
+</div>
+
+<script type="importmap">
+  {
+    "imports": {
+      "@google/genai": "https://esm.run/@google/genai"
+    }
+  }
+</script>
+
+<script type="module">
+  import { GoogleGenAI } from '@google/genai';
+
+  window.generateContent = async function() {
+    const apiKey = document.getElementById('apiKey').value.trim();
+    const promptText = document.getElementById('prompt').value.trim();
+    const outputDiv = document.getElementById('output');
+    const btnSend = document.getElementById('btnSend');
+
+    if (!apiKey) {
+      alert('Silakan masukkan API Key terlebih dahulu!');
+      return;
+    }
+    if (!promptText) {
+      alert('Silakan tulis prompt terlebih dahulu!');
+      return;
+    }
+
+    outputDiv.innerText = 'Sedang memproses...';
+    btnSend.disabled = true;
+
+    try {
+      const ai = new GoogleGenAI({ apiKey: apiKey });
+      const response = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: promptText,
+      });
+
+      outputDiv.innerText = response.text;
+    } catch (error) {
+      outputDiv.innerText = 'Terjadi kesalahan: ' + error.message;
+    } finally {
+      btnSend.disabled = false;
+    }
+  }
+</script>
+
+</body>
+</html>
